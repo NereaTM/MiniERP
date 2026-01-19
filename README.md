@@ -1,8 +1,13 @@
 # MINIERP
 Este proyecto consiste en desarrollar una MiniERP básica con Django para gestionar ventas. La idea es tener un sistema que permita registrar clientes, productos y pedidos, con su respectivo panel de administración para poder gestionar todo desde el Django Admin
 
-## **1. Modelado de Datos**
-### 1.1 Clasificar entidades
+## **1. Tecnologías utilizadas**
+![Python](https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Django](https://img.shields.io/badge/django-092E20?style=for-the-badge&logo=django&logoColor=white)
+![SQLite](https://img.shields.io/badge/sqlite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
+
+## **2. Modelado de Datos**
+### 2.1 Clasificar entidades
 
 ```markdown
 ## Entidades Maestros (Catálogos) - `core/models.py`
@@ -20,7 +25,7 @@ Son operaciones del día a día, voluminosas y con fecha:
 - **Pedido**: Cabecera del pedido (quién, cuándo, total)
 - **LíneaPedido**: Detalle de cada producto en el pedido
 ```
-### 1.2 Relaciones y cardinalidades
+### 2.2 Relaciones y cardinalidades
 ```markdown
 
 1. **Cliente → Pedido** (1:N)
@@ -44,7 +49,7 @@ Son operaciones del día a día, voluminosas y con fecha:
    - FK: `lineapedido.id_producto → producto.id`
 
 ```
-### 1.3 Políticas de Borrado (ON_DELETE)
+### 2.3 Políticas de Borrado (ON_DELETE)
 He configurado las políticas de borrado pensando en mantener la integridad de los datos:
 
 - **Cliente → Pedido (RESTRICT)**: No se puede borrar un cliente que tenga pedidos históricos. Esto protege la trazabilidad de las ventas.
@@ -52,7 +57,7 @@ He configurado las políticas de borrado pensando en mantener la integridad de l
 - **Pedido → LineaPedido (CASCADE)**: Si borro un pedido (por ejemplo, uno de prueba en borrador), automáticamente se borran todas sus líneas. Esto evita líneas huérfanas.
 - **Producto → LineaPedido (RESTRICT)**: No puedo borrar un producto que aparezca en alguna línea de pedido. Esto preserva el histórico de ventas.
 
-### 1.4 Snapshots (Datos Históricos)
+### 2.4 Snapshots (Datos Históricos)
 Si dentro de 2 años cambio el precio de un producto, necesito saber que en X momento lo vendí a ese precio. 
 Sin snapshots, perdería esa información histórica.
 
@@ -60,7 +65,7 @@ Sin snapshots, perdería esa información histórica.
 - `lineapedido.precio_unitario`: Precio aplicado en ese pedido (el precio actual puede ser diferente)
 - `lineapedido.tipo_iva`: % de IVA vigente en ese momento (las leyes fiscales pueden cambiar)
 
-### 1.5 Restricciones Adicionales
+### 2.5 Restricciones Adicionales
 **Campos UNIQUE (evitan duplicados)**:
 - `cliente.nif`: No puede haber dos clientes con el mismo NIF/CIF
 - `cliente.email`: No puede haber dos clientes con el mismo email
@@ -83,10 +88,10 @@ Sin snapshots, perdería esa información histórica.
 
 Estos campos tienen `default=0` para evitar valores NULL y facilitar cálculos posteriores
 
-### 1.7 Diagrama ER
+### 2.6 Diagrama ER
 ![Diagrama ER](ERdiagramaio.png)
 
-## **2. Comandos Útiles**
+## **3. Comandos Útiles**
 ```bash
 # Activar entorno virtual
 .\venv\Scripts\activate
