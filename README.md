@@ -113,6 +113,23 @@ python manage.py migrate
 python manage.py createsuperuser
 
 ```
+## KPI: Tasa de Conversión (CRM)
+
+La tasa de conversión mide el porcentaje de oportunidades que terminan en venta.
+
+Fórmula:
+
+Tasa de Conversión = (Oportunidades Ganadas / Total Oportunidades) × 100
+
+Ejemplo:
+
+Si hay 10 oportunidades y 3 están en estado "Cerrada Ganada":
+
+Tasa de conversión = (3 / 10) × 100 = 30%
+
+En el sistema, se calcula contando:
+- Total de oportunidades
+- Oportunidades con etapa = CERRADA_GANADA
 
 ## Licencia
-Proyecto escolar de DAM Curso 2025–2026. Sistemas de gestión empresarial
+Proyecto escolar de DAM Curso 2025–2026.

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM - Pipeline de Oportunidades</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            min-width: 220px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+
+        .label {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 8px;
+        }
+
+        .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .meta {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .valor {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-PRO { background: #6c757d; }
+        .badge-PRP { background: #0d6efd; }
+        .badge-NEG { background: #fd7e14; }
+        .badge-GAN { background: #198754; }
+        .badge-PER { background: #dc3545; }
+
+        .text-danger {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .text-success {
+            color: #198754;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>CRM - Pipeline de Oportunidades</h1>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="label">Total oportunidades</div>
+            <div class="value">{{ total }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Cerradas ganadas</div>
+            <div class="value">{{ ganadas }}</div>
+        </div>
+        <div class="stat-card">
+            <div class="label">Tasa de conversión</div>
+            <div class="value">{{ tasa_conversion }}%</div>
+        </div>
+    </div>
+
+    {% for op in oportunidades %}
+        <div class="card">
+            <div>
+                <h3>{{ op.titulo }}</h3>
+                <div class="meta">
+                    {{ op.cliente.nombre }} |
+                    <span class="badge badge-{{ op.etapa }}">{{ op.get_etapa_display }}</span>
+                </div>
+            </div>
+
+            <div class="right">
+                <div class="valor">{{ op.valor_estimado }} {{ moneda }}</div>
+                <div class="meta">
+                    Días en pipeline:
+                    <span class="{% if op.dias_abierta > 30 %}text-danger{% else %}text-success{% endif %}">
+                        {{ op.dias_abierta }} días
+                    </span>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p style="color: #888; text-align: center; padding: 40px;">
+            No hay oportunidades registradas.
+        </p>
+    {% endfor %}
+</body>
+</html>

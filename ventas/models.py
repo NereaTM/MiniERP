@@ -2,6 +2,8 @@ from django.db import models
 from django.db.models import Q, CheckConstraint
 from django.utils import timezone
 from core.models import Cliente, Producto, EstadoPedido
+from decimal import Decimal
+from django.core.exceptions import ValidationError
 
 
 class Pedido(models.Model):
@@ -28,30 +30,47 @@ class Pedido(models.Model):
     total_bruto = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_iva = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     total_neto = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         db_table = "Pedido"
-        indexes = [
-            models.Index(fields=["cliente", "fecha_pedido"], name="idx_pedido_cliente_fecha"),
-            models.Index(fields=["cliente"], name="idx_pedido_cliente_top"),
-        ]
 
     def __str__(self):
         return f"Pedido #{self.id_pedido} - {self.cliente.nombre}"
-    
+
+    # VALIDACIÓN ANTES DE GUARDAR
+    def clean(self):
+        if self.estado_pedido.nombre == "CONFIRMADO":
+            for linea in self.lineas.all():
+                if linea.producto.stock < int(linea.cantidad):
+                    raise ValidationError(
+                        f"No hay stock suficiente para {linea.producto.nombre}"
+                    )
+
+    # forzar validación en el admin 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+
+    # CÁLCULO DE TOTALES
     def calcular_totales(self):
         lineas = self.lineas.all()
-        
-        self.total_bruto = sum(linea.cantidad * linea.precio_unitario for linea in lineas)
-        self.total_iva = sum(linea.cantidad * linea.precio_unitario * linea.tipo_iva for linea in lineas )
-        
-        self.total_neto = self.total_bruto + self.total_iva
-        self.save()
+
+        base = Decimal("0.00")
+        iva = Decimal("0.00")
+
+        for linea in lineas:
+            subtotal = linea.precio_unitario * linea.cantidad
+            base += subtotal
+            iva += subtotal * linea.tipo_iva
+
+        self.total_bruto = base
+        self.total_iva = iva
+        self.total_neto = base + iva
+
+        super().save(update_fields=["total_bruto", "total_iva", "total_neto"])
+
 
 class LineaPedido(models.Model):
     id_linea_pedido = models.AutoField(primary_key=True, db_column="id_linea_pedido")
@@ -87,14 +106,27 @@ class LineaPedido(models.Model):
         ]
 
     def save(self, *args, **kwargs):
-            # Auto-relleno snapshots
-            if self.descripcion in (None, ""):
+        # Auto-relleno snapshots
+        if self.descripcion in (None, ""):
                 self.descripcion = self.producto.nombre
-            if self.precio_unitario is None:
-                self.precio_unitario = self.producto.precio_base
-            if self.tipo_iva is None:
-                self.tipo_iva = self.producto.tipo_iva
-            super().save(*args, **kwargs)
+
+        if self.precio_unitario is None:
+            self.precio_unitario = self.producto.precio_base
+
+        if self.tipo_iva is None:
+            self.tipo_iva = self.producto.tipo_iva
+
+        super().save(*args, **kwargs)
+
+        # recalcular totales automáticamente
+        self.pedido.calcular_totales()
+
+    def delete(self, *args, **kwargs):
+        pedido = self.pedido
+        super().delete(*args, **kwargs)
+
+        # recalcular tras borrar
+        pedido.calcular_totales()
 
     def __str__(self):
-        return f"{self.descripcion} x{self.cantidad} (Pedido #{self.pedido_id})"
+        return f"{self.descripcion} x{self.cantidad}"

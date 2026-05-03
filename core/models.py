@@ -26,6 +26,8 @@ class Producto(models.Model):
     precio_base = models.DecimalField(max_digits=10, decimal_places=2)
     tipo_iva = models.DecimalField(max_digits=4, decimal_places=2)
 
+    stock = models.IntegerField(default=0)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -34,11 +36,6 @@ class Producto(models.Model):
 
     def __str__(self):
         return f"{self.sku} - {self.nombre}"
-    
-    def precio_con_iva(self):
-        """Calcula el precio con IVA incluido"""
-        return self.precio_base * (1 + self.tipo_iva)
-
 
 
 class EstadoPedido(models.Model):
@@ -47,7 +44,6 @@ class EstadoPedido(models.Model):
 
     class Meta:
         db_table = "EstadoPedido"
-
 
     def __str__(self):
         return self.nombre
