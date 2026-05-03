@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniERP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+            color: #222;
+        }
+        header {
+            background: #1f3c88;
+            color: white;
+            padding: 20px 30px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        h2 {
+            color: #1f3c88;
+            margin-bottom: 20px;
+        }
+        .menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .btn {
+            padding: 14px 24px;
+            background: #1f3c88;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        .btn:hover {
+            background: #162d66;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>MiniERP</h1>
+    </header>
+    <main>
+        <h2>Panel principal</h2>
+        <div class="menu">
+            <a class="btn" href="/crm/">Dashboard CRM</a>
+            <a class="btn" href="/api/productos/">API Productos</a>
+            <a class="btn" href="/admin/">Administración</a>
+        </div>
+    </main>
+</body>
+</html>

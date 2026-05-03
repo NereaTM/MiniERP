@@ -1,9 +1,13 @@
 from django.contrib import admin
 from .models import Cliente, Producto, EstadoPedido
 
+from ventas.forms import ProductoForm, ClienteForm
+
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):
+    form = ClienteForm
+
     list_display = ["nif", "nombre", "email", "direccion"]
     search_fields = ["nif", "nombre", "email"]
     ordering = ["nombre"]
@@ -11,7 +15,9 @@ class ClienteAdmin(admin.ModelAdmin):
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ["sku", "nombre", "precio_base", "tipo_iva"]
+    form = ProductoForm 
+    
+    list_display = ["sku", "nombre", "precio_base", "tipo_iva", "stock"]
     search_fields = ["sku", "nombre"]
     ordering = ["nombre"]
 

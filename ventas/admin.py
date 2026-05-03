@@ -17,6 +17,7 @@ class PedidoAdmin(admin.ModelAdmin):
     ordering = ["-fecha_pedido", "-id_pedido"]
     inlines = [LineaPedidoInline]
 
+    readonly_fields = ["total_bruto", "total_iva", "total_neto"]
 
 @admin.register(LineaPedido)
 class LineaPedidoAdmin(admin.ModelAdmin):
