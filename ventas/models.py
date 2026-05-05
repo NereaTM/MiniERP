@@ -49,7 +49,7 @@ class Pedido(models.Model):
                         f"No hay stock suficiente para {linea.producto.nombre}"
                     )
 
-    # forzar validación en el admin 
+    # validación en el admin 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
